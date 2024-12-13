@@ -1,8 +1,52 @@
 ---
-title: "Analyzing Car Data: Regression and Dummy Variables"
-author: "Your Name"
+title: "Review: Normal Regression with R*"
+#author: "Your Name"
 output: html_document
 ---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Getting Started: Instructions for Students
+
+### 1. Turn On Your Laptop and Open RStudio
+- Ensure your laptop is connected to the internet.
+- Open RStudio, which should already be installed on your computer.
+
+### 2. Create a New R Project
+1. In RStudio, go to **File** > **New Project** > **New Directory** > **New Project**.
+2. Name the project something like `InClassDemo` and select or create a folder where it will be saved.
+3. Click **Create Project**.
+
+### 3. Download the R Markdown File
+- Copy and run the following code in the RStudio **Console** to download the `.Rmd` file into your project directory:
+
+```{r download-rmd, eval=FALSE}
+download.file(
+  "https://raw.githubusercontent.com/your-username/course-repo/main/in-class-demos/lecture_demo_rmd.Rmd",
+  destfile = "lecture_demo_rmd.Rmd"
+)
+```
+
+- Once downloaded, the file will appear in your **Files** pane in RStudio.
+
+### 4. Open the `.Rmd` File
+- In RStudio, click on the `lecture_demo_rmd.Rmd` file in the **Files** pane to open it.
+
+### 5. Install Required Packages
+- Run the following command in the RStudio Console to install any missing packages:
+
+```{r install-packages, eval=FALSE}
+install.packages(c("tidyverse", "knitr"))
+```
+
+### 6. Follow Along
+- Follow the instructor’s lead and run each code chunk interactively as demonstrated during the lecture.
+- **To Run a Code Chunk:** Place your cursor inside a code chunk and press **Ctrl+Enter (Windows/Linux)** or **Cmd+Enter (Mac)**, or click the green play button in the top-right corner of the chunk.
+
+---
+
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
