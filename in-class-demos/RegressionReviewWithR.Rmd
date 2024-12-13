@@ -1,0 +1,139 @@
+---
+title: "Analyzing Car Data: Regression and Dummy Variables"
+author: "Your Name"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+In this session, we’ll analyze a dataset of cars using linear regression. We’ll focus on creating dummy variables, interpreting models, and comparing group means.
+
+---
+
+## Step 1: Load the Data
+
+We start by loading the dataset directly from GitHub and inspecting its structure.
+
+```{r load-data}
+# Load the dataset
+kars <- read.table("https://raw.githubusercontent.com/dsoave/Datasets/refs/heads/main/mcars4.data")
+dim(kars)  # Check dimensions
+head(kars) # View first few rows
+summary(kars) # Summary statistics
+```
+
+---
+
+## Step 2: Data Transformation
+
+Next, we modify the dataset by creating dummy variables and converting `Cntry` into a factor.
+
+```{r transform-data}
+n <- dim(kars)[1]
+kars <- within(kars, {
+  # Make dummy variables
+  c1 <- numeric(n); c1[Cntry == 'Europ'] <- 1
+  c2 <- numeric(n); c2[Cntry == 'Japan'] <- 1
+  c3 <- numeric(n); c3[Cntry == 'US'] <- 1
+  # Convert `Cntry` to a factor
+  Cntry <- factor(Cntry)
+}) # End of within kars
+
+head(kars)
+summary(kars)
+```
+
+---
+
+## Step 3: Exploring Dummy Variables
+
+We validate the dummy variables and calculate the mean fuel consumption for each country.
+
+```{r validate-dummies}
+# Validate dummy variables
+with(kars, table(c1, Cntry))
+with(kars, table(c2, Cntry))
+with(kars, table(c3, Cntry))
+
+# Take a look at mean fuel consumption for each country
+with(kars, aggregate(lper100k, by = list(Cntry), FUN = mean))
+# Must specify a LIST of grouping factors
+```
+
+---
+
+## Step 4: Linear Models with Dummy Variables
+
+We fit a linear regression model to test differences in fuel consumption by country.
+
+```{r linear-models}
+# Initial model using dummy variables
+justcountry <- lm(lper100k ~ c1 + c2, data = kars)
+summary(justcountry)
+
+# Which means are different?
+# Have t-tests. What about Europe vs. Japan?
+# Test H0: beta1 = beta2
+# A cheap way is to use a different reference category.
+# R can make the dummy variables for you
+is.factor(kars$Cntry)
+# The factor Cntry has dummy vars built in. What are they?
+contrasts(kars$Cntry) # Note alphabetical order
+
+jc2 <- lm(lper100k ~ Cntry, data = kars)
+summary(jc2)
+```
+
+---
+
+## Step 5: Changing Reference Categories
+
+We explore how changing reference categories affects the interpretation of results.
+
+```{r reference-categories}
+# Change reference category to 'US'
+kars$Country <- kars$Cntry
+contrasts(kars$Country) <- contr.treatment(3, base = 3)
+summary(lm(lper100k ~ Country, data = kars))
+
+# Names of dummy variables 1=Europe, 2=Japan could be nicer
+colnames(contrasts(kars$Country)) <- c("Europe", "Japan")
+contrasts(kars$Country)
+
+summary(lm(lper100k ~ Country, data = kars))
+```
+
+---
+
+## Step 6: Including Covariates
+
+Finally, we include additional covariates like weight and length.
+
+```{r covariates}
+# Full model with covariates
+fullmodel <- lm(lper100k ~ weight + length + Country, data = kars)
+summary(fullmodel) # Look carefully at the signs!
+
+# Reduced model for comparison
+justsize <- lm(lper100k ~ weight + length, data = kars)
+summary(justsize)
+
+with(kars, cor(weight, length))
+
+# I advise using anova ONLY to compare full and reduced models
+anova(justsize, fullmodel) # Full vs reduced
+
+# Test car size controlling for country too -- why not?
+anova(justcountry, fullmodel)
+```
+
+---
+
+## Conclusion
+
+We’ve demonstrated how to create and use dummy variables, fit linear models, change reference categories, and interpret the inclusion of covariates.
+
