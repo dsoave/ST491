@@ -24,8 +24,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r download-rmd, eval=FALSE}
 download.file(
-  "https://raw.githubusercontent.com/your-username/course-repo/main/in-class-demos/lecture_demo_rmd.Rmd",
-  destfile = "lecture_demo_rmd.Rmd"
+  "https://raw.githubusercontent.com/dsoave/ST491/refs/heads/main/in-class-demos/RegressionReviewWithR.Rmd"
 )
 ```
 
