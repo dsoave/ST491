@@ -132,8 +132,3 @@ anova(justcountry, fullmodel)
 ```
 
 ---
-
-## Conclusion
-
-We’ve demonstrated how to create and use dummy variables, fit linear models, change reference categories, and interpret the inclusion of covariates.
-
