@@ -4,7 +4,7 @@
 
 rm(list=ls()); options(scipen=999) # Option to suppress scientific notation
 # Read normal data
-normaldata = scan("http://www.utstat.toronto.edu/brunner/data/legal/normal.data.txt")
+normaldata = scan("https://raw.githubusercontent.com/dsoave/Datasets/refs/heads/main/normal.data.txt")
 
 ################################################################################
 # (a) Find the maximum likelihood estimates of mu and sigma-squared numerically.
