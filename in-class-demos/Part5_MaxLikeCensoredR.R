@@ -1,5 +1,5 @@
 rm(list=ls()); options(scipen=999)
-wdata = read.table("http://www.utstat.utoronto.ca/~brunner/data/legal/Weibull.data2.txt")
+wdata = read.table("https://raw.githubusercontent.com/dsoave/Datasets/refs/heads/main/Weibull.data2.txt")
 dim(wdata)
 head(wdata)
 summary(wdata)
