@@ -103,7 +103,7 @@ text(2.2,0.45,'Estimated h(t)')
 t = seq(from=0,to=10,length=101)
 Density = exp(-8/3)* (t-2)^2 * exp(-(t-2)^3/3)
 plot(t,Density,type='l',main='Strange Density with h(t) = (t-2)^2')
-bowldat = read.table("http://www.utstat.toronto.edu/brunner/data/legal/bowlhaz.data.txt")
+bowldat = read.table("https://raw.githubusercontent.com/dsoave/Datasets/refs/heads/main/bowlhaz.data.txt")
 head(bowldat); summary(bowldat)
 
 Time = bowldat$Time; Uncensored = bowldat$Uncensored # Writing over earlier vars
