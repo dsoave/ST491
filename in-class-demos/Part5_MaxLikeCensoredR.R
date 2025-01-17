@@ -70,15 +70,6 @@ truemedian = log(2)^(1/truealpha) / truelambda; truemedian
 median(Time) # Sample median is way off, because it ignores censoring
 
 
-# Confidence interval for median
-# Need gdot
-# D[b^(1/a),a] works in Wolfram Alpha, as a check on hand calculation.
-
-gdot = cbind( - log(2)^(1/alphahat)*log(log(2))/(lambdahat*alphahat^2),
-               - log(2)^(1/alphahat)/lambdahat^2 )
-v_medhat = as.numeric( gdot %*% Vhat %*% t(gdot) ); se_medhat = sqrt(v_medhat)
-lower95 = medhat - 1.96*se_medhat; upper95 = medhat + 1.96*se_medhat
-c(lower95,upper95)
 
 ################################################################################
 # Plot hazard function h(t) = alpha*lambda^alpha * t^(alpha-1)
@@ -99,7 +90,10 @@ x2 = c(0.5,1.5); y2 = c(0.45,0.45)
 lines(x2,y2,lty=2)
 text(2.2,0.45,'Estimated h(t)')
 
-# What if the (Weibull) model is wrong? Try bowl shaped hazard.
+
+################################################################################
+# What if the (Weibull) model is wrong? Try bowl shaped hazard. See A#3 Q5
+################################################################################
 t = seq(from=0,to=10,length=101)
 Density = exp(-8/3)* (t-2)^2 * exp(-(t-2)^3/3)
 plot(t,Density,type='l',main='Strange Density with h(t) = (t-2)^2')
