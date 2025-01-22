@@ -122,9 +122,6 @@ restricted1
 Gsq = 2 * (restricted1$value - normalsearch$value)
 pval = 1-pchisq(Gsq,1)
 c(Gsq,pval)
-Gsq = 2 * (restricted1$value - normalsearch$value)
-pval = 1-pchisq(Gsq,1)
-c(Gsq,pval)
 
 
 ################################################################################
