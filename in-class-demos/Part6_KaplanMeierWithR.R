@@ -62,7 +62,7 @@ H = search1$hessian
 Vhat = solve(H) # Solve returns the inverse.
 
 ################################################################################
-# Point estimate and confidence interval for the median
+# Point estimate for the median
 # Median = log(2)^(1/alpha) / lambda
 ################################################################################
 
@@ -107,7 +107,7 @@ km2 = survfit(y ~ 1) # A regression model with just an intercept: No x values
 km2
 
 # What is the true median?
-# From HW4, S(t) = exp(-1/3 ((t-2)^3 + 8)
+# From HW3, S(t) = exp(-1/3 ((t-2)^3 + 8)
 # Set exp(-1/3 ((t-2)^3 + 8) = 1/2, get t = 0.190935
 
 # Plot true S(t) and MLE for comparison to K-M
