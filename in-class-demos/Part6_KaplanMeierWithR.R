@@ -6,6 +6,11 @@ Time = wdata$Time; Uncensored = wdata$Uncensored # Avoiding the attach() functio
 # install.packages("survival",dependencies=TRUE) # Only need to do this once
 library(survival) # Do this every time
 
+
+################################################################################
+# (a)
+################################################################################
+
 y = Surv(Time,Uncensored); y[1:20] # A pre-processing step
 km1 = survfit(y ~ 1) # Like a regression model with just an intercept: No x values
 km1
@@ -22,6 +27,10 @@ estvarShat = estvarlog * Shat^2 # One-var delta method
 seShat = sqrt(estvarShat); seShat # Compare 0.00684
 Shat + 1.96*seShat
 # Upper confidence limit was truncated to one.
+
+################################################################################
+# (b)
+################################################################################
 
 plot(km1)
 title('Kaplan-Meier Estimate for the Weibull Data')
@@ -47,7 +56,7 @@ mloglike = function(theta,t,delta)
      } # End of function mloglike
 
 ############
-# Find MLE #
+# (c) Find MLE #
 ############
 
 startvals = c(1,1/2) # I tried a few values
@@ -62,7 +71,7 @@ H = search1$hessian
 Vhat = solve(H) # Solve returns the inverse.
 
 ################################################################################
-# Point estimate for the median
+# (d) Point estimate for the median
 # Median = log(2)^(1/alpha) / lambda
 ################################################################################
 
@@ -70,6 +79,10 @@ Vhat = solve(H) # Solve returns the inverse.
 medhat = 1/lambdahat * log(2)^(1/alphahat); medhat
 # Compare the truth
 truemedian = log(2)^(1/truealpha) / truelambda; truemedian
+
+################################################################################
+# (e)
+################################################################################
 
 # Estimate the survival function
 x = seq(from=0,to=10,length=101)
@@ -86,14 +99,19 @@ x2 = x1; y2 = c(0.7,0.7)
 lines(x2,y2,lty=2)
 text(8.9,0.7,'Estimated S(t)', col = "blue1")
 
-# Add MLE to Kaplan-Meier plot
+################################################################################
+# (f) Add MLE to Kaplan-Meier plot
+################################################################################
+
 plot(km1)
 title("Kaplan-Meier Estimate for the Weibull Data")
 lines(x,trueS,lty=1, col = "red1")
 lines(x,Shat,lty=2, col = "blue1")
 
+################################################################################
+# (g) What if the (Weibull) model is wrong? Bowl (shaped hazard) data
+################################################################################
 
-# What if the (Weibull) model is wrong? Bowl (shaped hazard) data
 rm(list=ls()); options(scipen=999)
 bowldat = read.table("http://www.utstat.toronto.edu/brunner/data/legal/bowlhaz.data.txt")
 head(bowldat); summary(bowldat); attach(bowldat)
@@ -101,6 +119,10 @@ head(bowldat); summary(bowldat); attach(bowldat)
 
 # install.packages("survival",dependencies=TRUE) # Only need to do this once
 library(survival) # Do this every time
+
+################################################################################
+# (g) (i)
+################################################################################
 
 y = Surv(Time,Uncensored) # A pre-processing step
 km2 = survfit(y ~ 1) # A regression model with just an intercept: No x values
@@ -112,6 +134,10 @@ km2
 
 # Plot true S(t) and MLE for comparison to K-M
 
+
+################################################################################
+# (g) (ii)Find MLE
+################################################################################
 # Weibull minus log likelihood again
 mloglike = function(theta,t,delta)
      { # Minus log likelihood function for Weibull
@@ -123,13 +149,14 @@ mloglike = function(theta,t,delta)
      return(value)
      } # End of function mloglike
 
-# Find MLE
-
 startvals = c(1,1/2)
 search = optim(par=startvals, fn=mloglike, t=Time,delta=Uncensored,
                      hessian=TRUE, lower=c(0,0), method='L-BFGS-B')
 alphahat = search$par[1]; lambdahat = search$par[2]
 
+################################################################################
+# (g) (iii)
+################################################################################
 # MLE of median
 medhat = 1/lambdahat * log(2)^(1/alphahat); medhat
 # Compared to truth of 0.191 and K-M estimate of 0.178
@@ -138,11 +165,18 @@ medhat = 1/lambdahat * log(2)^(1/alphahat); medhat
 
 0.203-0.178 # Error of Kaplan-Meier
 
+################################################################################
+# (g) (iv)
+################################################################################
 
 plot(km2)
 # Add title and other estimates to Kaplan-Meier plot
 title('Kaplan-Meier Estimate for the Bowl Data')
 lines(x,trueS,lty=1, col = "red1")
+
+################################################################################
+# (g) (v)
+################################################################################
 
 lines(x,Shat,lty=2, col = "blue1")
 
