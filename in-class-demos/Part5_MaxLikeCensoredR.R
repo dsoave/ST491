@@ -27,7 +27,7 @@ yes = Time[Uncensored==1]; no = Time[Uncensored==0]
 
 
 ################################################################################
-# Find MLE
+# (a) Find MLE
 ################################################################################
 
 startvals = c(1,1/2) # I tried a few values
@@ -38,6 +38,9 @@ search1 = optim(par=startvals, fn=mloglike, t=Time,delta=Uncensored,
 
 search1
 
+################################################################################
+# (b) 
+################################################################################
 
 # If both eigenvalues of the Hessian are positive, minus LL is concave up.
 H = search1$hessian
@@ -53,13 +56,13 @@ c(lambdahat,truelambda)
 
 
 ################################################################################
-# Calculate the estimated asymptotic covariance matrix of the MLEs.
+# (c) Calculate the estimated asymptotic covariance matrix of the MLEs.
 ################################################################################
 
 Vhat = solve(H); Vhat # Solve returns the inverse.
 
 ################################################################################
-# Point estimate and confidence interval for the median
+# (d) Point estimate and confidence interval for the median
 # Median = log(2)^(1/alpha) / lambda
 ################################################################################
 
@@ -73,7 +76,7 @@ median(Time) # Sample median is way off, because it ignores censoring
 
 
 ################################################################################
-# Plot hazard function h(t) = alpha*lambda^alpha * t^(alpha-1)
+# (e) Plot hazard function h(t) = alpha*lambda^alpha * t^(alpha-1)
 ################################################################################
 
 x = seq(from=0,to=5,length=101)
@@ -93,7 +96,7 @@ text(2.2,0.45,'Estimated h(t)')
 
 
 ################################################################################
-# What if the (Weibull) model is wrong? Try bowl shaped hazard. See A#3 Q5
+# (f) What if the (Weibull) model is wrong? Try bowl shaped hazard. See A#3 Q5
 ################################################################################
 t = seq(from=0,to=10,length=101)
 Density = exp(-8/3)* (t-2)^2 * exp(-(t-2)^3/3)
@@ -114,7 +117,7 @@ mloglike = function(theta,t,delta)
      } # End of function mloglike
 
 ################################################################################
-# Find MLE
+# (f) (i) Find MLE
 ################################################################################
 
 startvals = c(1,1/2)
@@ -125,7 +128,7 @@ search
 alphahat = search$par[1]; lambdahat = search$par[2]
 
 ################################################################################
-# Plot hazard function h(t) = alpha*lambda^alpha * t^(alpha-1)
+# (f) (ii), (iii) Plot hazard function h(t) = alpha*lambda^alpha * t^(alpha-1)
 ################################################################################
 
 x = seq(from=0,to=5,length=101)
