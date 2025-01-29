@@ -17,7 +17,8 @@ mloglike = function(theta,t,delta)
      return(value)
      } # End of function mloglike
 
-# Testing
+# Testing that our likelihood function is working (it matches the dweibull and pweibull fns in R)
+
 mloglike(c(3,0.2),t=Time,delta=Uncensored)
 
 yes = Time[Uncensored==1]; no = Time[Uncensored==0]
