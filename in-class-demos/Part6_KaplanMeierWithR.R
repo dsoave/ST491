@@ -163,11 +163,15 @@ medhat = 1/lambdahat * log(2)^(1/alphahat); medhat
 
 0.203-0.191 # Error of MLE
 
-0.203-0.178 # Error of Kaplan-Meier
+0.178-0.191 # Error of Kaplan-Meier
 
 ################################################################################
 # (g) (iv)
 ################################################################################
+
+#True S(t)
+x = seq(from=0,to=8,length=101)
+trueS = exp(-1/3*((x-2)^3 + 8))
 
 plot(km2)
 # Add title and other estimates to Kaplan-Meier plot
@@ -177,7 +181,7 @@ lines(x,trueS,lty=1, col = "red1")
 ################################################################################
 # (g) (v)
 ################################################################################
-
+Shat = exp(-(lambdahat*x)^alphahat)
 lines(x,Shat,lty=2, col = "blue1")
 
 # Annotate the plot (Make the legend)
