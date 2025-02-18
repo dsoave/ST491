@@ -3,6 +3,10 @@ dim(kars)
 head(kars)
 summary(kars)
 
+################################################################################
+# (a)
+################################################################################
+
 n = dim(kars)[1]; n
 # Modifying the data frame, not the original data file
 kars = within(kars,{
@@ -22,7 +26,10 @@ with(kars,table(c1,Cntry))
 with(kars,table(c2,Cntry))
 with(kars,table(c3,Cntry))
 
-# Take a look at mean fuel consumption for each country
+################################################################################
+# (b) Take a look at mean fuel consumption for each country
+################################################################################
+# 
 with(kars, aggregate(lper100k,by=list(Cntry),FUN=mean) )
 
 # Must specify a LIST of grouping factors
@@ -59,10 +66,19 @@ colnames(contrasts(kars$Country)) = c("Europe","Japan")
 contrasts(kars$Country)
 
 summary( lm(lper100k~Country, data=kars) )
+
+################################################################################
+# (c)
+################################################################################
 # Include covariates
 fullmodel = lm(lper100k ~ weight+length+Country, data=kars)
 summary(fullmodel) # Look carefully at the signs!
 
+
+
+################################################################################
+# (d)
+################################################################################
 
 # Test country controlling for size, using full versus reduced approach.
 
@@ -74,10 +90,18 @@ with(kars, cor(weight,length)  )
 # I advise using anova ONLY to compare full and reduced models
 anova(justsize,fullmodel) # Full vs reduced
 
+################################################################################
+# (e)
+################################################################################
 # Test car size controlling for country too -- why not?
 anova(justcountry,fullmodel)
 
+
+
 ###### Predictions, confidence intervals and prediction intervals ######
+################################################################################
+# (f)
+################################################################################
 
 # Predict litres per 100 km for a Japanese car weighing
 # 1295kg, 4.52m long (1990 Toyota Camry)
@@ -87,6 +111,11 @@ b = fullmodel$coefficients; b
 ell = c(1,1295,4.52,1,0)
 yhat = sum(ell*b); # ell-prime b
 yhat
+
+
+################################################################################
+# (g)
+################################################################################
 
 # Confidence interval for E(ell-prime beta)
 # First the hard way
@@ -110,6 +139,9 @@ predict(fullmodel,newdata=camry1990, interval='confidence')
 
 predict(fullmodel,newdata=camry1990, interval='prediction')
 
+################################################################################
+# (h)
+################################################################################
 # Multiple predictions
 cadillac1990 = data.frame(weight=1800,length=5.22,Cntry='US')
 volvo1990 = data.frame(weight=1371,length=4.823,Cntry='Europ')
