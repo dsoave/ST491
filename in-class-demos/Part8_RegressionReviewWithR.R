@@ -10,13 +10,13 @@ summary(kars)
 n = dim(kars)[1]; n
 # Modifying the data frame, not the original data file
 kars = within(kars,{
-+ # Make dummy variables
-+ c1 = numeric(n); c1[Cntry=='Europ'] = 1
-+ c2 = numeric(n); c2[Cntry=='Japan'] = 1
-+ c3 = numeric(n); c3[Cntry=='US'] = 1
-+ # Make Cntry a factor
-+ Cntry = factor(Cntry)
-+ }) # End of within kars
+# Make dummy variables
+ c1 = numeric(n); c1[Cntry=='Europ'] = 1
+ c2 = numeric(n); c2[Cntry=='Japan'] = 1
+ c3 = numeric(n); c3[Cntry=='US'] = 1
+ # Make Cntry a factor
+ Cntry = factor(Cntry)
+ }) # End of within kars
 
 head(kars)
 summary(kars)
@@ -88,13 +88,13 @@ with(kars, cor(weight,length)  )
 
 
 # I advise using anova ONLY to compare full and reduced models
-anova(justsize,fullmodel) # Full vs reduced
+anova(justsize,fullmodel, test='LRT') # Full vs reduced
 
 ################################################################################
 # (e)
 ################################################################################
 # Test car size controlling for country too -- why not?
-anova(justcountry,fullmodel)
+anova(justcountry,fullmodel, test='LRT')
 
 
 
@@ -149,10 +149,3 @@ newcars = rbind(camry1990,cadillac1990,volvo1990); newcars
 
 is.data.frame(newcars)
 predict(fullmodel,newdata=newcars, interval='prediction')
-
-
-
-
-
-
-
