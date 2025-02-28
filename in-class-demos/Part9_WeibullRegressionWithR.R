@@ -77,3 +77,87 @@ text(300,0.017,'Combination')
 max(quit$ttr) # Maximum time value (censored)
 
 # 3) Estimate median time to relapse for the 2 groups, with Cis
+
+# Asymptotic covariance matrix comes out in terms of Log(scale), which is
+# unfortunate.
+# Denote log(sigma) by s, and re-write g(theta) = exp(beta0) * log(2)^sigma
+# as g(theta) = exp(beta0) * log(2)^exp(s)
+shat = log(sigmahat)
+
+# Patch Only
+medianhat0 = exp(betahat0)*log(2)^sigmahat
+# gdot will be a 1 x 3 matrix.
+gdot0 = cbind( exp(betahat0)*log(2)^exp(shat), 0, exp(betahat0) * log(2)^exp(shat) * log(log(2)) * exp(shat) )
+se0 = sqrt( as.numeric(gdot0 %*% Vhat %*% t(gdot0)) ); se0
+lower0 = medianhat0 - 1.96*se0; upper0 = medianhat0 + 1.96*se0
+patchonly = c(medianhat0,lower0,upper0)
+names(patchonly) = c('Median','Lower95','Upper95')
+patchonly
+
+# Combination drug treatment
+medianhat1 = exp(betahat0+betahat1)*log(2)^sigmahat
+gdot1 = cbind( exp(betahat0+betahat1)*log(2)^exp(shat), exp(betahat0+betahat1)*log(2)^exp(shat),
+                exp(betahat0+betahat1) * log(2)^exp(shat) * log(log(2)) * exp(shat) )
+se1 = sqrt( as.numeric(gdot1 %*% Vhat %*% t(gdot1)) ); se1
+lower1 = medianhat1 - 1.96*se1; upper1 = medianhat1 + 1.96*se1
+combination = c(medianhat1,lower1,upper1)
+names(combination) = c('Median','Lower95','Upper95')
+combination
+
+# There is an easier way to get these numbers
+# help(predict.survreg)
+Justpatch = data.frame(grp='patchOnly')
+# A data frame with just one case and one variable.
+Combination = data.frame(grp='combination')
+treatments = rbind(Justpatch,Combination); treatments
+
+# The 0.5 quantile is the median
+medians = predict(Model1,newdata=treatments,type='quantile',p=0.5,se=TRUE)
+medians
+
+cbind(medians$fit,medians$se)
+rbind(c(medianhat0,se0),
+       c(medianhat1,se1) )
+
+# 4) Plot the Kaplan-Meier estimates and MLEs of S(t)
+
+KM = survfit(DayOfRelapse~grp, type="kaplan-meier", data=quit)  
+# Kaplan-Meier is the default estimation method anyway.
+summary(KM)
+
+# Look at K-M estimates of medians
+KM[1] # Combination
+KM[2] # Patch Only
+
+# Repeat MLEs for comparison
+combination
+patchonly
+
+plot(KM,  xlab='t', ylab='Survival Probability', lwd=2, col=1:2)
+# 1 is black,  2 is red
+legend(x=125,y=1.0, col=1:2, lwd=2, legend=c('Combination','Patch Only'))
+title(expression(paste(hat(S)(t),': Kaplan-Meier and Maximum Likelihood Estimates')))
+# MLEs
+
+x = 1:185
+lambda0 = exp(-betahat0); lambda1 = exp(-betahat0-betahat1); alpha=1/sigmahat
+Shat0 = exp(-(lambda0*x)^alpha); Shat1 = exp(-(lambda1*x)^alpha)
+lines(x,Shat0,lty=2,col=2) # Patch only is red
+lines(x,Shat1,lty=2)       # Combination is black (default)
+
+# Non-parametric rank test of equal survival functions
+# See http://dwoll.de/rexrepos/posts/survivalKM.html.
+survdiff(DayOfRelapse~grpgrp, data=quit)
+
+# Compare p = 0.00367 from Z-test of H0: beta1=0
+twoby2
+prop.table(twoby2,1) # Proportions of row totals
+chisq.test(twoby2)
+
+fisher.test(twoby2) # p = 0.01713
+
+
+
+
+
+
