@@ -130,7 +130,7 @@ c(lower95, upper95) # 95% Confidence interval for ell-prime beta
 # Use the predict function
 # help(predict.lm)
 
-camry1990 = data.frame(weight=1295,length=4.52,Cntry='Japan')
+camry1990 = data.frame(weight=1295,length=4.52,Country='Japan')
 camry1990
 predict(fullmodel,newdata=camry1990) # Compare yhat = 12.38739
 predict(fullmodel,newdata=camry1990, interval='confidence')
