@@ -153,3 +153,87 @@ prop.table(twoby2,1) # Proportions of row totals
 chisq.test(twoby2)
 
 fisher.test(twoby2) # p = 0.01713
+
+
+#####################
+# Next we are going to look at some other covariates in larger
+# multiple variabel model
+
+# Make fixed-up data frame called quit
+quit = within(pharmacoSmoking,{
+ DayOfRelapse = Surv(ttr+1,relapse)
+ contrasts(grp) = contr.treatment(2,base=2) # Patch only is reference category
+ colnames(contrasts(grp)) = c('Combo') # Names of dummy vars -- just one
+ # Collapse race categories
+ Race = as.character(race) # Small r race is a factor. This is easier to modify.
+ Race[Race!='white'] = 'blackOther'; Race=factor(Race)
+ }) # Finished making data frame quit
+ with(quit, table(race,Race) )
+
+full = survreg(DayOfRelapse ~ grp + age + gender + Race + employment
+        + yearsSmoking + levelSmoking + priorAttempts, dist='weibull', data=quit)
+summary(full)
+ 
+# I am thinking about dropping Race, yearsSmoking, levelSmoking and priorAttempts. 
+# The last 3 variables all represent smoking history and could be correlated 
+# highly enough to wash out each other's effects. Test them simultaneously.
+
+# Fit the restricted model: Restricted by H0
+rest1 =  survreg(DayOfRelapse ~ grp + age + gender + Race + employment ,
+                  dist='weibull', data=quit)
+anova(rest1,full) # LR test
+
+
+# Is Race significant with those variables dropped?
+summary(rest1)
+
+# Decision: Drop race and gender.
+full2 =  survreg(DayOfRelapse ~ grp + age + employment , dist='weibull', data=quit)
+summary(full2)
+
+# Test employment status controlling for age and experimental treatment.
+rest2 = survreg(DayOfRelapse ~ grp + age , dist='weibull', data=quit)
+anova(rest2,full2) # LR test
+
+# Predict the day of relapse for a 50 year old patient who is employed 
+# full time and gets the patch-only treatment.
+thetahat<-full2$coefficients;thetahat
+sigmahat<-full2$scale
+  
+x = c(1,0,50,0,0)
+xb = sum(x*thetahat)
+
+
+# a) The estimated mean
+exp(xb) * gamma(sigmahat+1)
+
+# b) The estimated mean
+exp(xb) * log(2)^sigmahat
+
+# I think the median is preferable to mean because the Weibull distribution
+# is skewed. Also, the predict function for Weibull regression works as expected
+# for medians (but not means).
+
+oldguy = data.frame(grp='patchOnly',age=50,employment='ft')
+predict(full2,newdata=oldguy,type='quantile',p=0.5,se=TRUE)
+
+# The 0.5 quantile is the median. se is from the delta method.
+
+# Estimate and plot S(t) for the old guy.
+
+# The se of S-hat(t) is straightforward in theory, but messy in practice. 
+# e.g. requires multivariate delta method
+
+t = 1:365
+Shat = exp( -(exp(-xb/sigmahat)*t^(1/sigmahat)) )
+
+plot(t,Shat,type='l',ylim=c(0,1),xlab='t',ylab='Probability that Relapse is After Day t')
+tstring = expression(paste(hat(S)(t), " = Probability Relapsing After Day t"))
+title(tstring)
+
+# Plot estimated hazard function for that 50 year old patient who is employed 
+# full time and gets the patch-only treatment.
+
+h = 1/sigmahat * exp(-xb/sigmahat) * t^(1/sigmahat - 1)
+plot(t,h,type='l',xlab='Day',ylab='Risk',main='Estimated Risk of Relapse')
+
