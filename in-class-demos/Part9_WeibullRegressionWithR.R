@@ -10,6 +10,7 @@ library(asaur)
 head(pharmacoSmoking)
 summary(pharmacoSmoking)
 
+### Create the survival object (outcome)
 quit = within(pharmacoSmoking, {TimeToRelapse = Surv(ttr,relapse)} )
 sort(quit$TimeToRelapse)
 
@@ -42,6 +43,18 @@ betahat = Model1$coefficients; betahat
 betahat0 = betahat[1]; betahat1 = betahat[2]
 sigmahat = Model1$scale; sigmahat
 Vhat = vcov(Model1); Vhat
+
+## Estimated mean survival time for the groups
+exp(betahat0)*gamma(1+sigmahat)
+exp(betahat0+betahat1)*gamma(1+sigmahat)
+predict(Model1,type="response")
+?predict.survreg
+
+## Estimated mean survival time for the groups
+exp(betahat0)*log(2)^sigmahat
+exp(betahat0+betahat1)*log(2)^sigmahat
+predict(Model1,type="quantile",p=0.5)
+
 
 # Asymptotic covariance matrix comes out in terms of Log(scale), which is
 # a minor pain.
@@ -154,10 +167,20 @@ chisq.test(twoby2)
 
 fisher.test(twoby2) # p = 0.01713
 
+#The log-rank test (survdiff()) is better suited for comparing 
+# survival distributions than chi-square (chisq.test()) or 
+# Fisher’s exact test (fisher.test()) because it accounts for time-to-event 
+# data and censoring, which the other tests do not handle. Specifically, 
+# the "expected" number of events is calculated at each event time with
+# the appropriate number considered "at risk". This accounts for the censoring
+# in the same what the KM method does.
+# Chi-square and Fisher’s exact tests only compare proportions of 
+# categorical outcomes (e.g., dead vs. alive) without considering 
+# survival times.
 
 #####################
-# Next we are going to look at some other covariates in larger
-# multiple variabel model
+# Next we are going to look at some other covariates in a larger
+# multiple variable model
 
 # Make fixed-up data frame called quit
 quit = within(pharmacoSmoking,{
@@ -207,7 +230,7 @@ xb = sum(x*thetahat)
 # a) The estimated mean
 exp(xb) * gamma(sigmahat+1)
 
-# b) The estimated mean
+# b) The estimated median
 exp(xb) * log(2)^sigmahat
 
 # I think the median is preferable to mean because the Weibull distribution
