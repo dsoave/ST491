@@ -32,10 +32,15 @@ summary(Model0)
 # Write down the table of population means for the two groups. 
 # Now write the one we want.
 
+contrasts(quit$grp)
+
 quit = within(quit,{
  contrasts(grp) = contr.treatment(2,base=2)
  colnames(contrasts(grp)) = c('Combo') # Names of dummy vars -- just one
  })
+
+contrasts(quit$grp)
+
 Model1 = survreg(DayOfRelapse~grp,dist='weibull', data=quit)
 summary(Model1)
 
@@ -50,7 +55,7 @@ exp(betahat0+betahat1)*gamma(1+sigmahat)
 predict(Model1,type="response")
 ?predict.survreg
 
-## Estimated mean survival time for the groups
+## Estimated median survival time for the groups
 exp(betahat0)*log(2)^sigmahat
 exp(betahat0+betahat1)*log(2)^sigmahat
 predict(Model1,type="quantile",p=0.5)
