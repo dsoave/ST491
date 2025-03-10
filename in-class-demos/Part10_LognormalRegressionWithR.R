@@ -54,7 +54,8 @@ c( exp(A), exp(B)) # Prediction interval
 exp(A)*24  # Lower limit in hours
 exp(B)/365 # Upper limit in years
 
-# So with 95% confidence, the old guy will be able to hold out between 5.2 hours and 3.9 years. Thank you very much.
+# So with 95% confidence, the old guy will be able to hold out between 
+# 5.2 hours and 3.9 years. Thank you very much.
 
 # Now the easy way
 oldguy = data.frame(grp='patchOnly',age=50,employment='pt')
@@ -69,7 +70,3 @@ pi = c(t_hat,lower95,upper95)
 names(pi) = c('t-hat','lower95','upper95')
 
 pi
-
-# Wide prediction intervals are a fact of life for many data sets. “Predicting” university calculus score from a bunch of good variables, using a normal model with no censoring ...
-
-round( predict(good,interval='prediction'), 1)
