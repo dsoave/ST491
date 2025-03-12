@@ -70,3 +70,45 @@ pi = c(t_hat,lower95,upper95)
 names(pi) = c('t-hat','lower95','upper95')
 
 pi
+
+
+
+#Comparing Survival Curves (Weibull VS Lognormal)
+
+
+t = 1:365
+
+xnplus1 = cbind(1,0,50,0,0); xnplus1
+sigmahat = lognorm$scale
+sigmahatW = wmod$scale
+betahat = lognorm$coefficients; betahat
+betahatW = wmod$coefficients; betahatW
+
+yhat = sum(xnplus1*betahatW); yhat # This is estimated x'beta
+exp(yhat)
+
+Shat = exp( -(exp(-yhat/sigmahatW)*t^(1/sigmahatW)) )
+plot(t,Shat,type='l',ylim=c(0,1),xlab='t',ylab='Probability that Relapse is After Day t')
+tstring = expression(paste(hat(S)(t), " = Probability Relapsing After Day t"))
+title(tstring)
+lines(t,Shat,col=1)
+points(exp(yhat) * log(2)^sigmahatW,0.5)
+
+yhat = sum(xnplus1*betahat); yhat # This is estimated x'beta
+ShatLN = 1-pnorm((log(t)-yhat)/sigmahat)
+lines(t,ShatLN,lty=2)
+points(exp(yhat),0.5)
+
+xnplus1 = cbind(1,1,50,0,0); xnplus1
+yhat = sum(xnplus1*betahatW); yhat # This is estimated x'beta
+exp(yhat)
+
+Shat = exp( -(exp(-yhat/sigmahatW)*t^(1/sigmahatW)) )
+title(tstring)
+lines(t,Shat,col=2)
+points(exp(yhat) * log(2)^sigmahatW,0.5)
+
+yhat = sum(xnplus1*betahat); yhat # This is estimated x'beta
+ShatLN = 1-pnorm((log(t)-yhat)/sigmahat)
+lines(t,ShatLN,lty=2,col=2)
+points(exp(yhat),0.5)
