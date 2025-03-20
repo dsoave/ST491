@@ -54,14 +54,6 @@ quit = within(pharmacoSmoking,{
  }) # Finished making data frame quit
 
 head(quit)
-w_All = survreg(DayOfRelapse ~ grp + age +  employment + yearsSmoking + levelSmoking + priorAttempts, dist='weibull', data=quit); summary(w_All)
-
-ph_All = coxph(DayOfRelapse ~ grp + age +  employment + yearsSmoking + levelSmoking + priorAttempts, data=quit); summary(ph_All)
-
-# Checking the re-parameterization, a Weibull -beta_j/sigma should be close to a proportional hazards beta_j. Look at Racewhite.
-
--1.092580/1.72  # Compare  -0.1394286 from PH
-# Not bad. This is n=125
 
 wfull =  survreg(DayOfRelapse ~ grp + age + employment , dist='weibull', data=quit)
 summary(wfull)
@@ -69,10 +61,17 @@ summary(wfull)
 phfull =  coxph(DayOfRelapse ~ grp + age + employment, data=quit)
 summary(phfull)
 
+# Checking the re-parameterization, a Weibull -beta_j/sigma should be close to a proportional hazards beta_j. Look at Racewhite.
+
+-(1.1023)/1.73  # Compare  -0.60788 from PH
+# Not bad. This is n=125
+
+
+
 # How are they getting the confidence intervals for those hazard ratios?
 
 
-# Try Partial Likelihood and Wald tests for employment, controlling for age and
+# Try Partial Likelihood test for employment, controlling for age and
 # experimental treatment.
 
 # Partial Likelihood Ratio test
