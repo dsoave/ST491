@@ -23,12 +23,11 @@ Kidney = within(kidney,{
  sex = sex-1 # Indicator for female
  # Centering age and frailty
  age = age-mean(age)
- frail = frail-mean(frail)
  })
-with(Kidney,cor(age,frail))
 
 kmod1 = coxph( Surv(time,status) ~ age + sex + disease, data=Kidney)
 summary(kmod1)
+
 # Are se(coef) labelled correctly?
 se = sqrt(diag(vcov(kmod1))); se # Yes
 
@@ -44,18 +43,17 @@ exp(CIbeta1)
 
 summary(kmod1)
 
+# Class?
 # (1) Estimated hazard of infection is ____ times as great for female as male
 # (2) Estimated hazard of infection is ____ times as great for disease type AN as it is for Other.
 # (3) Estimated hazard of infection is ____ times as great for disease type AN as it is for disease type PKD.
 betahat = coef(kmod1); betahat
 
-exp(betahat[4]-betahat[5]) # Hazard ratio of AN/PKD
 
-
-# Test disease type with  a partial likeihood ratio test
+# Test disease type with  a partial likelihood ratio test
 k2 = coxph( Surv(time,status) ~ age + sex, data=Kidney)
 anova(k2,kmod1)
-
+# Result?
 
 # Comparing survival functions for males and females
 male = data.frame(age=0, sex=0, disease="Other") # An average guy
@@ -72,11 +70,11 @@ ls(s1)
 
 summary(s1)
 
-head(s1$cumhaz)
+head(s1$cumhaz) # H(t)
 
 
-S = s1$surv[1:10,1] # Col 1 is males
-H = s1$cumhaz[1:10,1]
+S = s1$surv[1:10,1] # Col 1 is males S(t)
+H = s1$cumhaz[1:10,1] # Col 1 is males H(t)
 Q = exp(-H) # Question: Is this the survival function?
 cbind(H,S,Q)
 
@@ -90,10 +88,10 @@ plot(s1)
 
 # Try to locate the medians
 xx = c(0,400); yy = c(.5,0.5)
-lines(xx,yy,col="red")
-# Median for M = 26, F = 141 ?
+lines(xx,yy,col="red",lty=2)
+# Median for M = 25, F = 141 ?
 
-xm = c(26,26); ym = c(0,1); lines(xm,ym,col="red")
+xm = c(25,25); ym = c(0,1); lines(xm,ym,col="red")
 xf = c(141,141); yf = c(0,1); lines(xf,yf,col="blue")
 
 # How about a nicer plot?
@@ -117,6 +115,7 @@ AN = data.frame(age=0, sex=1, disease="AN", frail=0)
 PKD = data.frame(age=0, sex=1, disease="PKD", frail=0)
 discomp = rbind(Other, GN, AN, PKD)
 rownames(discomp) = c("Other", "GN", "AN", "PKD")
+discomp
 s2 = survfit(kmod1,newdata=discomp); s2
 
 summary(kmod1)
@@ -130,18 +129,45 @@ plot(s2,lty = 1:4,xlab="Days", ylab="Probability")
 title('Estimated "Survival" Probabilities by Disease Type')
 ### Which disease type has the obvious favourable prognosis?
 
+### But there are only 8 people in the PKD group
+table(Kidney$disease)
+### Why are there so many steps in S(t) for the PKD group?
+
+### Compare with the KM estimates for S(t) across disease type:
+plot(survfit(Surv(time,status) ~ disease ,data=Kidney),lty=1,col=3)
+
+
+
+
 
 ### Compare the estimated survival curves using coxph and 
 ### the Breslow estimate of H0(t)
 ### VS the survival curves estimate from the KM approach
 ### Both approaches stratify by sex only
-kmod1 = coxph( Surv(time,status) ~ sex, data=Kidney)
-plot(survfit(kmod1,newdata=sexcomp))
+kmod2 = coxph( Surv(time,status) ~ sex, data=Kidney)
+plot(survfit(kmod2,newdata=sexcomp))
 # KM Curves for the two sex categories.
 lines(survfit(Surv(time,status) ~ sex ,data=Kidney),lty=2)
 
 
-kmod1 = coxph( Surv(time,status) ~ 1, data=Kidney)
-plot(survfit(kmod1),conf.int = FALSE)
+
+### extra
+
+### Compare the estimated survival curves using coxph and 
+### the Breslow estimate of H0(t)
+### VS the survival curves estimate from the KM approach
+### Both approaches stratify by diease only
+kmod2 = coxph( Surv(time,status) ~ disease, data=Kidney)
+plot(survfit(kmod2,newdata=discomp))
+# KM Curves for the two sex categories.
+lines(survfit(Surv(time,status) ~ disease ,data=Kidney),lty=2)
+### ignoring sex, there is no association with disease type.
+
+
+
+
+kmod3 = coxph( Surv(time,status) ~ 1, data=Kidney)
+plot(survfit(kmod3),conf.int = FALSE)
 # KM Curves for the two sex categories.
 lines(survfit(Surv(time,status) ~ 1 ,data=Kidney),lty=2,conf.int = F)
+
