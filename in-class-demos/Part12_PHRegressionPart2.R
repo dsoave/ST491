@@ -27,6 +27,7 @@ Kidney = within(kidney,{
 
 kmod1 = coxph( Surv(time,status) ~ age + sex + disease, data=Kidney)
 summary(kmod1)
+# Write out the hazard function for this model h(t)
 
 # Are se(coef) labelled correctly?
 se = sqrt(diag(vcov(kmod1))); se # Yes
@@ -52,17 +53,19 @@ betahat = coef(kmod1); betahat
 
 # Test disease type with  a partial likelihood ratio test
 k2 = coxph( Surv(time,status) ~ age + sex, data=Kidney)
+# Reduced model h(t)?
 anova(k2,kmod1)
 # Result?
 
 # Comparing survival functions for males and females
+# write out S(t)^hat
 male = data.frame(age=0, sex=0, disease="Other") # An average guy
 female = data.frame(age=0, sex=1, disease="Other") # An average gal
 sexcomp = rbind(male,female); sexcomp
 
 rownames(sexcomp) = c("M","F"); sexcomp
 
-s1 = survfit(kmod1,newdata=sexcomp)
+s1 = survfit(kmod1,newdata=sexcomp) # Provides the estiated baseline hazard h0(t) etc.
 s1
 
 
@@ -129,15 +132,6 @@ plot(s2,lty = 1:4,xlab="Days", ylab="Probability")
 title('Estimated "Survival" Probabilities by Disease Type')
 ### Which disease type has the obvious favourable prognosis?
 
-### But there are only 8 people in the PKD group
-table(Kidney$disease)
-### Why are there so many steps in S(t) for the PKD group?
-
-### Compare with the KM estimates for S(t) across disease type:
-plot(survfit(Surv(time,status) ~ disease ,data=Kidney),lty=1,col=3)
-
-
-
 
 
 ### Compare the estimated survival curves using coxph and 
@@ -148,6 +142,7 @@ kmod2 = coxph( Surv(time,status) ~ sex, data=Kidney)
 plot(survfit(kmod2,newdata=sexcomp))
 # KM Curves for the two sex categories.
 lines(survfit(Surv(time,status) ~ sex ,data=Kidney),lty=2)
+
 
 
 
